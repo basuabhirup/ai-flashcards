@@ -28,7 +28,9 @@ export default function RootLayout({
           <AppBar position="static">
             <Toolbar>
               <Typography variant="h6" style={{ flexGrow: 1 }}>
-                AI Flashcards
+                <Button variant="text" size="large" href="/" sx={{ color: "white" }}>
+                  AI Flashcards
+                </Button>
               </Typography>
               <ClerkLoaded>
                 <SignedOut>

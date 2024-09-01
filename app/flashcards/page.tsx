@@ -2,9 +2,9 @@
 
 import { Loader } from "@/components/loader";
 import { db } from "@/config/firebase";
-import { IFlashcard } from "@/util/interfaces";
 import { useUser } from "@clerk/nextjs";
 import {
+  Box,
   Card,
   CardActionArea,
   CardContent,
@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 
 export default function Flashcard() {
   const { isLoaded, isSignedIn, user } = useUser();
-  const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
+  const [flashcardSets, setFlashcardSets] = useState<{ name: string }[]>([]);
   const router = useRouter();
 
   const handleCardClick = (id?: string) => {
@@ -30,11 +30,9 @@ export default function Flashcard() {
       if (!user) return;
       const docRef = doc(collection(db, "users"), user.id);
       const docSnap = await getDoc(docRef);
-      console.log(docSnap.data());
       if (docSnap.exists()) {
         const collections = docSnap.data().flashcardSets || [];
-        console.log({ collections });
-        setFlashcards(collections);
+        setFlashcardSets(collections);
       } else {
         await setDoc(docRef, { flashcardSets: [] });
       }
@@ -54,14 +52,21 @@ export default function Flashcard() {
 
   return (
     <Container maxWidth="md">
+      <Box sx={{ my: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          All Flashcard sets
+        </Typography>
+      </Box>
       <Grid2 container spacing={3} sx={{ mt: 4 }}>
-        {flashcards.map((flashcard, index) => (
+        {flashcardSets.map((flashcardSet, index) => (
           <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
             <Card>
-              <CardActionArea onClick={() => handleCardClick(flashcard.name)}>
+              <CardActionArea
+                onClick={() => handleCardClick(flashcardSet.name)}
+              >
                 <CardContent>
                   <Typography variant="h5" component="div">
-                    {flashcard.name}
+                    {flashcardSet.name}
                   </Typography>
                 </CardContent>
               </CardActionArea>
