@@ -18,6 +18,8 @@ import {
 } from "@mui/material";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
+import { useUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
 export default function Generate() {
   const [text, setText] = useState("");
@@ -29,6 +31,12 @@ export default function Generate() {
   >([]);
   const [setName, setSetName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const { user } = useUser();
+
+  if (!user) {
+    return redirect("/");
+  }
 
   const handleOpenDialog = () => setDialogOpen(true);
   const handleCloseDialog = () => setDialogOpen(false);
@@ -64,7 +72,7 @@ export default function Generate() {
     }
 
     try {
-      const userDocRef = doc(collection(db, "users"), user.id);
+      const userDocRef = doc(collection(db, "users"), user?.id);
       const userDocSnap = await getDoc(userDocRef);
 
       const batch = writeBatch(db);
