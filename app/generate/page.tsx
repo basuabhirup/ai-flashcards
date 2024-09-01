@@ -32,9 +32,21 @@ export default function Generate() {
   const [setName, setSetName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const { user } = useUser();
+  const { user, isSignedIn, isLoaded } = useUser();
 
-  if (!user) {
+  if (!isLoaded) {
+    return (
+      <Container maxWidth="md">
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h5" component="h5" gutterBottom>
+            Loading...
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
+  if (!isSignedIn) {
     return redirect("/");
   }
 
