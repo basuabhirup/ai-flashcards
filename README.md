@@ -2,6 +2,8 @@
 
 **AI Flashcards** is an AI-powered flashcard application designed to elevate learning with smart, efficient study tools. Built with cutting-edge technologies like Next.js, React, Firebase, and the OpenAI API, this application offers a seamless experience for students and professionals looking to enhance their study sessions.
 
+https://github.com/user-attachments/assets/6059e36c-eeea-4723-96d7-73707c2ff03e
+
 ## Features
 
 - **AI-Generated Flashcards:** Utilize OpenAI's powerful API to create flashcards automatically based on your inputs.
