@@ -20,30 +20,19 @@ import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
+import { IFlashcard } from "@/util/interfaces";
+import { Loader } from "@/components/loader";
 
 export default function Generate() {
   const [text, setText] = useState("");
-  const [flashcards, setFlashcards] = useState<
-    {
-      front: string;
-      back: string;
-    }[]
-  >([]);
+  const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
   const [setName, setSetName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const { user, isSignedIn, isLoaded } = useUser();
 
   if (!isLoaded) {
-    return (
-      <Container maxWidth="md">
-        <Box sx={{ my: 4 }}>
-          <Typography variant="h5" component="h5" gutterBottom>
-            Loading...
-          </Typography>
-        </Box>
-      </Container>
-    );
+    return <Loader />;
   }
 
   if (!isSignedIn) {
