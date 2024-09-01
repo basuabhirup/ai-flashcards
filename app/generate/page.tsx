@@ -19,17 +19,20 @@ import {
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { IFlashcard } from "@/util/interfaces";
 import { Loader } from "@/components/loader";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 
 export default function Generate() {
   const [text, setText] = useState("");
   const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
   const [setName, setSetName] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { user, isSignedIn, isLoaded } = useUser();
+  const router = useRouter();
 
   if (!isLoaded) {
     return <Loader />;
@@ -47,6 +50,7 @@ export default function Generate() {
       alert("Please enter some text to generate flashcards.");
       return;
     }
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/generate", {
@@ -63,6 +67,8 @@ export default function Generate() {
     } catch (error) {
       console.error("Error generating flashcards:", error);
       alert("An error occurred while generating flashcards. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -71,6 +77,7 @@ export default function Generate() {
       alert("Please enter a name for your flashcard set.");
       return;
     }
+    setIsLoading(true);
 
     try {
       const userDocRef = doc(collection(db, "users"), user?.id);
@@ -97,36 +104,54 @@ export default function Generate() {
       alert("Flashcards saved successfully!");
       handleCloseDialog();
       setSetName("");
+      router.push("/flashcards");
     } catch (error) {
       console.error("Error saving flashcards:", error);
       alert("An error occurred while saving flashcards. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <Container maxWidth="md">
       <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Generate Flashcards
+        <Typography variant="h4" component="h1" gutterBottom mb={4}>
+          {flashcards.length === 0
+            ? "Generate Flashcards"
+            : `Flashcards for "${text}"`}
         </Typography>
-        <TextField
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          label="Enter text"
-          fullWidth
-          multiline
-          rows={4}
-          variant="outlined"
-          sx={{ mb: 2 }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSubmit}
-          fullWidth
-        >
-          Generate Flashcards
-        </Button>
+        {flashcards.length === 0 && (
+          <>
+            <TextField
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              label="Enter text"
+              fullWidth
+              multiline
+              rows={2}
+              variant="outlined"
+              sx={{ mb: 2 }}
+            />
+            <Box display="flex">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSubmit}
+                sx={{
+                  marginLeft: "auto",
+                  padding: "0.75rem 1.5rem",
+                }}
+                startIcon={<AutoAwesomeIcon />}
+                disabled={isLoading}
+              >
+                <Typography fontSize="small" component="span">
+                  Generate Flashcards
+                </Typography>
+              </Button>
+            </Box>
+          </>
+        )}
       </Box>
 
       {flashcards.length > 0 && (
@@ -181,7 +206,7 @@ export default function Generate() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={saveFlashcards} color="primary">
+          <Button onClick={saveFlashcards} color="primary" disabled={isLoading}>
             Save
           </Button>
         </DialogActions>

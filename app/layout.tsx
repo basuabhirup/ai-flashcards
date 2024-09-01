@@ -28,7 +28,12 @@ export default function RootLayout({
           <AppBar position="static">
             <Toolbar>
               <Typography variant="h6" style={{ flexGrow: 1 }}>
-                <Button variant="text" size="large" href="/" sx={{ color: "white" }}>
+                <Button
+                  variant="text"
+                  size="large"
+                  href="/"
+                  sx={{ color: "white", fontWeight: "bold" }}
+                >
                   AI Flashcards
                 </Button>
               </Typography>
@@ -42,6 +47,22 @@ export default function RootLayout({
                   </SignUpButton>
                 </SignedOut>
                 <SignedIn>
+                  <Button
+                    variant="text"
+                    size="large"
+                    href="/generate"
+                    sx={{ color: "white" }}
+                  >
+                    Generate
+                  </Button>
+                  <Button
+                    variant="text"
+                    size="large"
+                    href="/flashcards"
+                    sx={{ color: "white", mr: "1rem" }}
+                  >
+                    My Flashcards
+                  </Button>
                   <UserButton />
                 </SignedIn>
               </ClerkLoaded>
