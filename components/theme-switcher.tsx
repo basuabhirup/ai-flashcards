@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@nextui-org/react";
+import { Button, Link } from "@nextui-org/react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -17,8 +17,8 @@ export function ThemeSwitcher() {
 
   return (
     <Button
-      variant="flat"
-      size="sm"
+      as={Link}
+      isIconOnly
       onClick={() => setTheme(theme === "light" ? "dark" : "light")}
       className="ml-auto"
     >

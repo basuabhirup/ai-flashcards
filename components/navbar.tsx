@@ -33,10 +33,10 @@ export const NavBar = () => {
   }, []);
 
   const menuItems = [
-    { label: "Generate Flashcards", href: "/generate" },
-    { label: "Saved Flashcards", href: "/flashcards" },
+    { label: "Home", href: "/" },
+    { label: "Generate", href: "/generate" },
+    { label: "Saved Cards", href: "/flashcards" },
   ];
-
   if (!mounted) return null;
 
   return (
@@ -64,7 +64,7 @@ export const NavBar = () => {
               {menuItems.map((item, index) => (
                 <Link
                   key={index}
-                  color="foreground"
+                  color={item.href === pathname ? "primary" : "foreground"}
                   href={item.href}
                   className="mx-2"
                 >
@@ -75,13 +75,13 @@ export const NavBar = () => {
           </NavbarContent>
         </SignedIn>
         <NavbarContent justify="end">
-          <NavbarItem>
+          <NavbarItem className="hidden sm:flex">
             <ThemeSwitcher />
           </NavbarItem>
           <SignedOut>
             <NavbarItem>
               <SignInButton mode="modal">
-                <Button as={Link} color="primary" href="#" variant="flat">
+                <Button as={Link} color="primary" variant="flat">
                   Sign In
                 </Button>
               </SignInButton>
@@ -93,9 +93,13 @@ export const NavBar = () => {
         </NavbarContent>
         <SignedIn>
           <NavbarMenu>
+            <NavbarMenuItem>
+              <ThemeSwitcher />
+            </NavbarMenuItem>
             {menuItems.map((item, index) => (
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
+                  key={index}
                   color={item.href === pathname ? "primary" : "foreground"}
                   className="w-full"
                   href={item.href}
