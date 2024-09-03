@@ -18,7 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html className="scroll-smooth" lang="en">
         <body>
           <NextUIProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">

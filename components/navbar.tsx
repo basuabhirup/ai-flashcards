@@ -79,6 +79,9 @@ export const NavBar = () => {
             <ThemeSwitcher />
           </NavbarItem>
           <SignedOut>
+            <NavbarItem className="flex sm:hidden">
+              <ThemeSwitcher />
+            </NavbarItem>
             <NavbarItem>
               <SignInButton mode="modal">
                 <Button as={Link} color="primary" variant="flat">
