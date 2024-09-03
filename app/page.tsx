@@ -38,7 +38,7 @@ export default function Home() {
           <div className="flex flex-col mb-8 lg:mb-16 space-y-4 sm:flex-row sm:justify-center sm:space-y-0 sm:space-x-4">
             <ClerkLoading>
               <Button
-                color="primary"
+                color="secondary"
                 className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                 isLoading
               >
@@ -55,7 +55,7 @@ export default function Home() {
             <ClerkLoaded>
               <SignedIn>
                 <Button
-                  color="primary"
+                  color="secondary"
                   className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                   as={Link}
                   href="/generate"
@@ -66,7 +66,7 @@ export default function Home() {
               <SignedOut>
                 <SignUpButton mode="modal">
                   <Button
-                    color="primary"
+                    color="secondary"
                     className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                   >
                     Get Started
@@ -88,7 +88,7 @@ export default function Home() {
       <section id="features" className="bg-white dark:bg-gray-900">
         <div className="py-8 px-4 mx-auto flex flex-col justify-center items-center w-full text-center lg:py-16 lg:px-12">
           <div className="max-w-screen-md mb-8 lg:mb-16">
-            <h2 className="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">
+            <h2 className="mb-4 text-4xl tracking-tight font-extrabold leading-tight text-gray-900 dark:text-white">
               Key Features of AI Flashcards App
             </h2>
             <p className="text-gray-500 sm:text-xl dark:text-gray-400">
@@ -103,7 +103,7 @@ export default function Home() {
                 key={index}
                 className="flex flex-col justify-center items-center "
               >
-                <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full lg:h-12 lg:w-12 bg-primary-100 dark:bg-primary-900 text-primary-600 dark:text-primary-300">
+                <div className="flex justify-center items-center mb-4 w-10 h-10 rounded-full lg:h-12 lg:w-12 bg-secondary-100 dark:bg-secondary-900 text-secondary-600 dark:text-secondary-300">
                   {feature.icon}
                 </div>
                 <h3 className="mb-2 text-xl font-bold dark:text-white">
@@ -130,7 +130,7 @@ export default function Home() {
             </p>
             <ClerkLoading>
               <Button
-                color="primary"
+                color="secondary"
                 className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                 isLoading
               >
@@ -141,16 +141,16 @@ export default function Home() {
               <SignedOut>
                 <SignUpButton mode="modal">
                   <Button
-                    color="primary"
+                    color="secondary"
                     className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                   >
-                    Get Started
+                    Get Started Now
                   </Button>
                 </SignUpButton>
               </SignedOut>
               <SignedIn>
                 <Button
-                  color="primary"
+                  color="secondary"
                   className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                   as={Link}
                   href="/generate"
@@ -162,7 +162,7 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
+      <footer className="px-4 py-8 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
         <div className="mx-auto max-w-screen-xl text-center">
           <a
             href="#"

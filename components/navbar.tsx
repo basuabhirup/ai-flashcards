@@ -35,7 +35,7 @@ export const NavBar = () => {
   const menuItems = [
     { label: "Home", href: "/" },
     { label: "Generate", href: "/generate" },
-    { label: "Saved Cards", href: "/flashcards" },
+    { label: "My Flashcards", href: "/flashcards" },
   ];
   if (!mounted) return null;
 
@@ -64,7 +64,7 @@ export const NavBar = () => {
               {menuItems.map((item, index) => (
                 <Link
                   key={index}
-                  color={item.href === pathname ? "primary" : "foreground"}
+                  color={item.href === pathname ? "secondary" : "foreground"}
                   href={item.href}
                   className="mx-2"
                 >
@@ -84,7 +84,7 @@ export const NavBar = () => {
             </NavbarItem>
             <NavbarItem>
               <SignInButton mode="modal">
-                <Button as={Link} color="primary" variant="flat">
+                <Button as={Link} color="secondary" variant="flat">
                   Sign In
                 </Button>
               </SignInButton>
@@ -103,7 +103,7 @@ export const NavBar = () => {
               <NavbarMenuItem key={`${item}-${index}`}>
                 <Link
                   key={index}
-                  color={item.href === pathname ? "primary" : "foreground"}
+                  color={item.href === pathname ? "secondary" : "foreground"}
                   className="w-full"
                   href={item.href}
                   size="lg"

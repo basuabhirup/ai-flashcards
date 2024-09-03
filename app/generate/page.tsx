@@ -1,34 +1,31 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Container,
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Grid2,
-  Card,
-  CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-} from "@mui/material";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useUser } from "@clerk/nextjs";
 import { redirect, useRouter } from "next/navigation";
 import { IFlashcard } from "@/util/interfaces";
 import { Loader } from "@/components/loader";
-import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import {
+  Button,
+  Card,
+  CardBody,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalHeader,
+  Textarea,
+  useDisclosure,
+} from "@nextui-org/react";
+import { Save, SaveAll, Sparkles } from "lucide-react";
 
 export default function Generate() {
   const [text, setText] = useState("");
   const [flashcards, setFlashcards] = useState<IFlashcard[]>([]);
   const [setName, setSetName] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { user, isSignedIn, isLoaded } = useUser();
@@ -41,9 +38,6 @@ export default function Generate() {
   if (!isSignedIn) {
     return redirect("/");
   }
-
-  const handleOpenDialog = () => setDialogOpen(true);
-  const handleCloseDialog = () => setDialogOpen(false);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -102,7 +96,7 @@ export default function Generate() {
       await batch.commit();
 
       alert("Flashcards saved successfully!");
-      handleCloseDialog();
+      onClose();
       setSetName("");
       router.push("/flashcards");
     } catch (error) {
@@ -114,103 +108,102 @@ export default function Generate() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom mb={4}>
-          {flashcards.length === 0
-            ? "Generate Flashcards"
-            : `Flashcards for "${text}"`}
-        </Typography>
-        {flashcards.length === 0 && (
-          <>
-            <TextField
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              label="Enter text"
-              fullWidth
-              multiline
-              rows={2}
-              variant="outlined"
-              sx={{ mb: 2 }}
-            />
-            <Box display="flex">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSubmit}
-                sx={{
-                  marginLeft: "auto",
-                  padding: "0.75rem 1.5rem",
-                }}
-                startIcon={<AutoAwesomeIcon />}
-                disabled={isLoading}
-              >
-                <Typography fontSize="small" component="span">
-                  Generate Flashcards
-                </Typography>
-              </Button>
-            </Box>
-          </>
-        )}
-      </Box>
+    <>
+      <section id="generate" className="bg-white dark:bg-gray-900">
+        <div className="py-8 px-4 mx-auto flex flex-col justify-start items-center w-full min-h-[85vh] text-center lg:py-16 lg:px-12">
+          <div className="max-w-screen-md mb-8 lg:mb-16">
+            <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
+              {flashcards.length < 1
+                ? "Enter your subject or theme for flashcards"
+                : `Generated flashcards for "${text}"`}
+            </h2>
 
-      {flashcards.length > 0 && (
-        <>
-          <Box sx={{ mt: 4 }}>
-            <Typography variant="h5" component="h2" gutterBottom>
-              Generated Flashcards
-            </Typography>
-            <Grid2 container spacing={2}>
-              {flashcards.map((flashcard, index) => (
-                <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                  <Card>
-                    <CardContent>
-                      <Typography variant="h6">Front:</Typography>
-                      <Typography>{flashcard.front}</Typography>
-                      <Typography variant="h6" sx={{ mt: 2 }}>
-                        Back:
-                      </Typography>
-                      <Typography>{flashcard.back}</Typography>
-                    </CardContent>
-                  </Card>
-                </Grid2>
-              ))}
-            </Grid2>
-          </Box>
-          <Box sx={{ mt: 4, display: "flex", justifyContent: "center" }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleOpenDialog}
-            >
-              Save Flashcards
-            </Button>
-          </Box>
-        </>
-      )}
-      <Dialog open={dialogOpen} onClose={handleCloseDialog}>
-        <DialogTitle>Save Flashcard Set</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Please enter a name for your flashcard set.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            label="Set Name"
-            type="text"
-            fullWidth
-            value={setName}
-            onChange={(e) => setSetName(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button onClick={saveFlashcards} color="primary" disabled={isLoading}>
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+            {flashcards.length < 1 && (
+              <>
+                <Textarea
+                  label="Topic"
+                  placeholder="E.g., Key facts about the Solar System..."
+                  className="w-full"
+                  disabled={isLoading}
+                  onChange={(e) => setText(e.target.value)}
+                />
+
+                <Button
+                  isLoading={isLoading}
+                  size="sm"
+                  color="secondary"
+                  startContent={!isLoading && <Sparkles />}
+                  className="mt-6 px-4 py-6 text-md"
+                  onClick={handleSubmit}
+                >
+                  {isLoading ? "Generating Flashcards" : "Generate Flashcards"}
+                </Button>
+              </>
+            )}
+
+            {flashcards.length > 0 && (
+              <>
+                <div className="flex w-full justify-center gap-x-4 gap-y-4 flex-wrap">
+                  {flashcards.map((card, index) => (
+                    <Card className="min-h-[200px] w-[180px]" key={index}>
+                      <CardBody className="flex flex-col justify-center items-center text-center">
+                        <p className="text-sm text-foreground-500 font-bold mb-4">
+                          {card.front}
+                        </p>
+                        <p className="text-sm text-foreground-500">
+                          {card.back}
+                        </p>
+                      </CardBody>
+                    </Card>
+                  ))}
+                </div>
+                <Button
+                  isLoading={isLoading}
+                  size="sm"
+                  color="secondary"
+                  startContent={!isLoading && <SaveAll />}
+                  className="mt-6 px-4 py-6 text-md"
+                  onPress={onOpen}
+                >
+                  {isLoading ? "Saving Flashcards" : "Save Flashcards"}
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Save Flashcards Set
+              </ModalHeader>
+              <ModalBody className="flex flex-col items-center px-6 py-8">
+                <Input
+                  type="text"
+                  color="secondary"
+                  autoFocus
+                  label="Set Name"
+                  fullWidth
+                  value={setName}
+                  onChange={(e) => setSetName(e.target.value)}
+                />
+                <Button
+                  color="secondary"
+                  startContent={!isLoading && <Save size={16} />}
+                  className="mt-2 mb-4 ml-auto"
+                  onClick={saveFlashcards}
+                  isLoading={isLoading}
+                >
+                  {isLoading ? "Saving" : "Save"}
+                </Button>
+              </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+    </>
   );
 }
