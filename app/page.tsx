@@ -1,7 +1,7 @@
 import { ClerkLoaded, ClerkLoading, SignedIn, SignedOut } from "@clerk/nextjs";
 import { SignUpButton } from "@clerk/nextjs";
-import { Button, Link } from "@nextui-org/react";
-import { BookMarked, CloudUpload, WandSparkles } from "lucide-react";
+import { Button, Link, LinkIcon } from "@nextui-org/react";
+import { BookMarked, CloudUpload, Sparkles, WandSparkles } from "lucide-react";
 
 const features = [
   {
@@ -97,7 +97,7 @@ export default function Home() {
               enjoyable.
             </p>
           </div>
-          <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
+          <div className="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0 max-w-screen-lg">
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -117,42 +117,76 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-      {/* <Box sx={{ my: 6, padding: "3rem" }}>
-        <Typography variant="h4" component="h2" gutterBottom>
-          Features
-        </Typography>
-        <Grid2 container spacing={4}>
-          {features.map((feature, index) => (
-            <Grid2 size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-              <Card>
-                <CardContent>
-                  <Box
-                    sx={{ display: "flex", justifyContent: "center", mb: 2 }}
+      <section id="cta" className="bg-white dark:bg-gray-900">
+        <div className="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
+          <div className="mx-auto max-w-screen-sm text-center">
+            <h2 className="mb-4 text-4xl tracking-tight font-extrabold leading-tight text-gray-900 dark:text-white">
+              Ready to Revolutionize Your Study Sessions?
+            </h2>
+            <p className="mb-6 font-light text-gray-500 dark:text-gray-400 md:text-lg">
+              Join thousands of students and professionals who are enhancing
+              their learning with ai-flashcards. Get started today and
+              experience the future of studying!
+            </p>
+            <ClerkLoading>
+              <Button
+                color="primary"
+                className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
+                isLoading
+              >
+                Get Started
+              </Button>
+            </ClerkLoading>
+            <ClerkLoaded>
+              <SignedOut>
+                <SignUpButton mode="modal">
+                  <Button
+                    color="primary"
+                    className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
                   >
-                    {feature.icon}
-                  </Box>
-                  <Typography
-                    variant="h6"
-                    component="h3"
-                    gutterBottom
-                    align="center"
-                  >
-                    {feature.title}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    align="center"
-                  >
-                    {feature.description}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </Grid2>
-          ))}
-        </Grid2>
-      </Box> */}
+                    Get Started
+                  </Button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <Button
+                  color="primary"
+                  className="inline-flex justify-center items-center py-3 px-5 text-base font-medium text-center rounded-lg"
+                  as={Link}
+                  href="/generate"
+                >
+                  Generate Flashcards
+                </Button>
+              </SignedIn>
+            </ClerkLoaded>
+          </div>
+        </div>
+      </section>
+      <footer className="p-4 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
+        <div className="mx-auto max-w-screen-xl text-center">
+          <a
+            href="#"
+            className="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white mb-4"
+          >
+            <Sparkles className="mr-2" />
+            AI Flashcards
+          </a>
+          {/* <p className="text-sm text-gray-500 dark:text-gray-400 my-4">
+            <Link
+              href="https://github.com/basuabhirup/ai-flashcards"
+              className="inline-flex items-center text-foreground text-sm"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Github className="w-5 h-5 mr-1" />
+              Proudly Open-Source
+            </Link>
+          </p> */}
+          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
+            © 2024 Abhirup Basu. All Rights Reserved.
+          </span>
+        </div>
+      </footer>
     </main>
   );
 }
