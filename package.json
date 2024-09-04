@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@clerk/nextjs": "^5.3.7",
-    "@mui/icons-material": "^6.0.1",
     "@nextui-org/react": "^2.4.6",
     "firebase": "^10.13.1",
     "framer-motion": "^11.3.31",
