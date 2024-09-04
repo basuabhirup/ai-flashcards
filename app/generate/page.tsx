@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
-import { useUser } from "@clerk/nextjs";
+import { useClerk, useUser } from "@clerk/nextjs";
 import { redirect, useRouter } from "next/navigation";
 import { IFlashcard } from "@/util/interfaces";
 import { Loader } from "@/components/loader";
@@ -27,21 +27,17 @@ export default function Generate() {
   const [setName, setSetName] = useState("");
   const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
   const { user, isSignedIn, isLoaded } = useUser();
+  const { openSignIn } = useClerk();
   const router = useRouter();
-
-  if (!isLoaded) {
-    return <Loader />;
-  }
-
-  if (!isSignedIn) {
-    return redirect("/");
-  }
 
   const handleSubmit = async () => {
     if (!text.trim()) {
       alert("Please enter some text to generate flashcards.");
+      return;
+    }
+    if (!isSignedIn) {
+      openSignIn();
       return;
     }
     setIsLoading(true);
@@ -69,6 +65,10 @@ export default function Generate() {
   const saveFlashcards = async () => {
     if (!setName.trim()) {
       alert("Please enter a name for your flashcard set.");
+      return;
+    }
+    if (!isSignedIn) {
+      openSignIn();
       return;
     }
     setIsLoading(true);
@@ -122,10 +122,16 @@ export default function Generate() {
               <>
                 <Textarea
                   label="Topic"
+                  autoFocus
                   placeholder="E.g., Key facts about the Solar System..."
                   className="w-full"
-                  disabled={isLoading}
-                  onChange={(e) => setText(e.target.value)}
+                  disabled={isLoading || !isLoaded}
+                  value={text}
+                  onChange={(e) => isSignedIn && setText(e.target.value)}
+                  {...(!isSignedIn && {
+                    onClick: () => openSignIn(),
+                    onKeyDown: () => openSignIn(),
+                  })}
                 />
 
                 <Button
@@ -135,6 +141,7 @@ export default function Generate() {
                   startContent={!isLoading && <Sparkles />}
                   className="mt-6 px-4 py-6 text-md"
                   onClick={handleSubmit}
+                  disabled={!isLoaded}
                 >
                   {isLoading ? "Generating Flashcards" : "Generate Flashcards"}
                 </Button>

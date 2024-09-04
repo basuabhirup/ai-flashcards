@@ -1,13 +1,9 @@
-import { Box, Container, Typography } from "@mui/material";
+import { Spinner } from "@nextui-org/react";
 
 export const Loader = () => {
   return (
-    <Container maxWidth="md">
-      <Box sx={{ my: 4 }}>
-        <Typography variant="h5" component="h5" gutterBottom>
-          Loading...
-        </Typography>
-      </Box>
-    </Container>
+    <section className="flex-grow w-full flex flex-col justify-center items-center pb-8 bg-white dark:bg-gray-900">
+      <Spinner color="secondary" />
+    </section>
   );
 };
