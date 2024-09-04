@@ -14,7 +14,7 @@ const FlippableCard = ({ frontContent, backContent }: IProps) => {
   };
 
   return (
-    <div className="w-[200px] h-[240px]" style={{ perspective: "1000px" }}>
+    <div className="w-[210px] h-[280px]" style={{ perspective: "1000px" }}>
       <div
         className="relative w-full h-full transition-transform duration-500 cursor-pointer"
         style={{
@@ -24,15 +24,15 @@ const FlippableCard = ({ frontContent, backContent }: IProps) => {
         onClick={handleClick}
       >
         <Card
-          className="absolute w-full h-full dark:bg-gray-800"
+          className="absolute w-full h-full dark:bg-gray-800 border border-secondary-200 dark:border-secondary-100"
           style={{ backfaceVisibility: "hidden" }}
         >
           <CardBody className="flex items-center justify-center p-4">
-            <p className="text-sm font-bold text-center">{frontContent}</p>
+            <p className="text-sm text-center">{frontContent}</p>
           </CardBody>
         </Card>
         <Card
-          className="absolute w-full h-full dark:bg-gray-800"
+          className="absolute w-full h-full dark:bg-gray-800 border border-success-200 dark:border-success-100"
           style={{
             backfaceVisibility: "hidden",
             transform: "rotateY(180deg)",

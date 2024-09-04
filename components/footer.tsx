@@ -26,7 +26,7 @@ export const Footer = () => {
         <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
           © 2024&nbsp;
           <Link
-            href="https://github.com/basuabhirup/ai-flashcards"
+            href="https://github.com/basuabhirup/ai-flashcards/blob/v1-main/LICENSE"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm text-decoration-none"
