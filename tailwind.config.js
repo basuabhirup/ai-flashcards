@@ -9,8 +9,26 @@ module.exports = {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      perspective: {
+        1000: "1000px",
+      },
+    },
   },
+  variants: {},
   darkMode: "class",
-  plugins: [nextui()],
+  plugins: [
+    nextui(),
+    function ({ addUtilities }) {
+      const newUtilities = {
+        ".backface-hidden": {
+          "backface-visibility": "hidden",
+        },
+        ".transform-style-3d": {
+          "transform-style": "preserve-3d",
+        },
+      };
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
 };

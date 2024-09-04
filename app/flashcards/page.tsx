@@ -52,7 +52,7 @@ export default function Flashcard() {
                     className="min-h-[200px] w-[150px] dark:bg-gray-800"
                     key={index}
                     as={Link}
-                    href={`/flashcard?id=${set.name}`}
+                    href={`/flashcard?setName=${set.name}`}
                   >
                     <CardBody className="flex flex-col justify-center items-center text-center">
                       <p className="text-sm text-foreground-500 font-bold mb-4">
