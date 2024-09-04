@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { NavBar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export const metadata: Metadata = {
   title: "AI Flashcards",
@@ -23,7 +24,8 @@ export default function RootLayout({
           <NextUIProvider>
             <ThemeProvider attribute="class" defaultTheme="dark">
               <NavBar />
-              {children}
+              <main className="flex flex-col min-h-[85vh]">{children}</main>
+              <Footer />
             </ThemeProvider>
           </NextUIProvider>
         </body>

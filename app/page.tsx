@@ -25,7 +25,7 @@ const features = [
 
 export default function Home() {
   return (
-    <main>
+    <>
       <section id="home" className="bg-white dark:bg-gray-900">
         <div className="py-8 px-4 mx-auto max-w-screen-xl text-center lg:py-16 lg:px-12">
           <h1 className="mb-4 text-4xl font-extrabold xl:mx-48 tracking-tight leading-none text-gray-900 md:text-5xl lg:text-6xl dark:text-white">
@@ -162,31 +162,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-      <footer className="px-4 py-8 bg-white md:p-8 lg:p-10 dark:bg-gray-800">
-        <div className="mx-auto max-w-screen-xl text-center">
-          <a
-            href="#"
-            className="flex justify-center items-center text-2xl font-semibold text-gray-900 dark:text-white mb-4"
-          >
-            <Sparkles className="mr-2" />
-            AI Flashcards
-          </a>
-          {/* <p className="text-sm text-gray-500 dark:text-gray-400 my-4">
-            <Link
-              href="https://github.com/basuabhirup/ai-flashcards"
-              className="inline-flex items-center text-foreground text-sm"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Github className="w-5 h-5 mr-1" />
-              Proudly Open-Source
-            </Link>
-          </p> */}
-          <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-            © 2024 Abhirup Basu. All Rights Reserved.
-          </span>
-        </div>
-      </footer>
-    </main>
+    </>
   );
 }
