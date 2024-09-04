@@ -49,7 +49,7 @@ export default function Flashcard() {
               <div className="flex w-full justify-center gap-x-4 gap-y-4 flex-wrap">
                 {flashcardSets.map((set, index) => (
                   <Card
-                    className="min-h-[150px] w-[150px] dark:bg-gray-800"
+                    className="min-h-[200px] w-[150px] dark:bg-gray-800"
                     key={index}
                     as={Link}
                     href={`/flashcard?setName=${set.name}`}

@@ -14,7 +14,7 @@ const FlippableCard = ({ frontContent, backContent }: IProps) => {
   };
 
   return (
-    <div className="w-[210px] h-[280px]" style={{ perspective: "1000px" }}>
+    <div className="w-[240px] h-[320px]" style={{ perspective: "1000px" }}>
       <div
         className="relative w-full h-full transition-transform duration-500 cursor-pointer"
         style={{
