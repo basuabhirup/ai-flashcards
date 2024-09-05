@@ -5,6 +5,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { NavBar } from "@/components/navbar";
 import { Footer } from "@/components/footer";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "AI Flashcards",
@@ -28,6 +29,7 @@ export default function RootLayout({
               <Footer />
             </ThemeProvider>
           </NextUIProvider>
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>

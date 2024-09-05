@@ -4,9 +4,8 @@ import { useState } from "react";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useClerk, useUser } from "@clerk/nextjs";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { IFlashcard } from "@/util/interfaces";
-import { Loader } from "@/components/loader";
 import {
   Button,
   Card,
@@ -20,6 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import { Save, SaveAll, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 export default function Generate() {
   const [text, setText] = useState("");
@@ -33,7 +33,7 @@ export default function Generate() {
 
   const handleSubmit = async () => {
     if (!text.trim()) {
-      alert("Please enter some text to generate flashcards.");
+      alert("Please enter your text to generate flashcards.");
       return;
     }
     if (!isSignedIn) {
@@ -43,6 +43,36 @@ export default function Generate() {
     setIsLoading(true);
 
     try {
+      const userDocRef = doc(collection(db, "users"), user?.id);
+      const generatedFlashcardsRef = collection(
+        userDocRef,
+        "generatedFlashcards"
+      );
+
+      // Get the user's document to check their usage
+      const userDoc = await getDoc(userDocRef);
+      const userData = userDoc.data() || {};
+      const currentMonth = new Date().getMonth();
+      const lastGenerationMonth = userData.lastGenerationMonth || -1;
+      let monthlyCount = userData.monthlyGenerationCount || 0;
+
+      // Reset the count if it's a new month
+      if (currentMonth !== lastGenerationMonth) {
+        monthlyCount = 0;
+      }
+
+      // Check if the user has exceeded the monthly limit
+      const MONTHLY_LIMIT =
+        process.env.NEXT_PUBLIC_MONTHLY_FLASHCARDS_LIMIT || 10;
+      if (monthlyCount >= MONTHLY_LIMIT) {
+        toast.error(
+          `You have reached your monthly limit (${MONTHLY_LIMIT} cards / month) for flashcard generation.`
+        );
+        setIsLoading(false);
+        return;
+      }
+
+      // Make the API call to generate flashcards
       const response = await fetch("/api/generate", {
         method: "POST",
         body: text,
@@ -53,10 +83,37 @@ export default function Generate() {
       }
 
       const data = await response.json();
+
+      // Update Firestore in a batch
+      const batch = writeBatch(db);
+
+      // Add the generated flashcards to the user's generatedFlashcards subcollection
+      const newFlashcardDoc = doc(generatedFlashcardsRef);
+      batch.set(newFlashcardDoc, {
+        prompt: text,
+        generatedFlashcards: data,
+        timestamp: new Date(),
+      });
+
+      // Update user's usage data
+      batch.set(
+        userDocRef,
+        {
+          monthlyGenerationCount: monthlyCount + 1,
+          lastGenerationMonth: currentMonth,
+          lastGenerationTimestamp: new Date(),
+        },
+        { merge: true }
+      );
+
+      await batch.commit();
+
       setFlashcards(data);
     } catch (error) {
       console.error("Error generating flashcards:", error);
-      alert("An error occurred while generating flashcards. Please try again.");
+      toast.error(
+        "An error occurred while generating flashcards. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -64,7 +121,7 @@ export default function Generate() {
 
   const saveFlashcards = async () => {
     if (!setName.trim()) {
-      alert("Please enter a name for your flashcard set.");
+      alert("Please enter a name for your flashcards set.");
       return;
     }
     if (!isSignedIn) {
@@ -95,13 +152,15 @@ export default function Generate() {
 
       await batch.commit();
 
-      alert("Flashcards saved successfully!");
+      toast.success("Flashcards saved successfully!");
       onClose();
       setSetName("");
       router.push("/flashcards");
     } catch (error) {
       console.error("Error saving flashcards:", error);
-      alert("An error occurred while saving flashcards. Please try again.");
+      toast.error(
+        "An error occurred while saving flashcards. Please try again."
+      );
     } finally {
       setIsLoading(false);
     }

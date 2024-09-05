@@ -54,7 +54,7 @@ export default function Flashcard() {
         opacity: 0,
       }),
     }),
-    [direction]
+    []
   );
 
   useEffect(() => {
@@ -94,7 +94,7 @@ export default function Flashcard() {
   return (
     <>
       <section className="flex-grow bg-white dark:bg-gray-900">
-        <div className="py-8 px-4 mx-auto flex flex-col justify-start items-center w-full text-center lg:py-16 lg:px-12">
+        <div className="py-8 px-4 mx-auto flex flex-col justify-start items-center w-full text-center lg:px-12">
           <div className="max-w-screen-md mb-8 lg:mb-16">
             <h2 className="mb-6 text-2xl font-bold text-gray-900 dark:text-white">
               {setName}

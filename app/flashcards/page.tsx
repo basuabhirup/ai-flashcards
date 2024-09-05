@@ -5,7 +5,6 @@ import { db } from "@/config/firebase";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { Button, Card, CardBody, Link } from "@nextui-org/react";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
-import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function Flashcard() {
