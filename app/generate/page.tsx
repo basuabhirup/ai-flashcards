@@ -135,20 +135,26 @@ export default function Generate() {
       const userDocSnap = await getDoc(userDocRef);
 
       const batch = writeBatch(db);
+      const currentTimestamp = new Date();
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         const updatedSets = [
           ...(userData.flashcardSets || []),
-          { name: setName },
+          { name: setName, timestamp: currentTimestamp },
         ];
         batch.update(userDocRef, { flashcardSets: updatedSets });
       } else {
-        batch.set(userDocRef, { flashcardSets: [{ name: setName }] });
+        batch.set(userDocRef, {
+          flashcardSets: [{ name: setName, timestamp: currentTimestamp }],
+        });
       }
 
       const setDocRef = doc(collection(userDocRef, "flashcardSets"), setName);
-      batch.set(setDocRef, { flashcards });
+      batch.set(setDocRef, {
+        flashcards,
+        createdAt: currentTimestamp,
+      });
 
       await batch.commit();
 
