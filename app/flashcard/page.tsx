@@ -7,7 +7,7 @@ import { IFlashcard } from "@/util/interfaces";
 import { SignedIn, useUser } from "@clerk/nextjs";
 import { Button, Link, Progress } from "@nextui-org/react";
 import { collection, doc, getDoc } from "firebase/firestore";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { redirect, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,6 +27,9 @@ export default function Flashcard() {
     if (currIndex > 0) {
       setDirection(-1);
       setCurrIndex((prev) => prev - 1);
+    } else {
+      setDirection(1);
+      setCurrIndex(flashcards.length - 1);
     }
   };
 
@@ -35,7 +38,9 @@ export default function Flashcard() {
       setDirection(1);
       setCurrIndex((prev) => prev + 1);
     } else {
-      router.push("/flashcards");
+      setDirection(-1);
+      setCurrIndex(0);
+      // router.push("/flashcards");
     }
   };
 
@@ -101,11 +106,18 @@ export default function Flashcard() {
             </h2>
             {flashcards.length > 0 && (
               <div className="flex flex-col w-full my-8 justify-center items-center gap-6">
-                <Progress
-                  color="secondary"
-                  aria-label="Progress"
-                  value={((currIndex + 1) * 100) / flashcards.length}
-                />
+                <div className="flex w-[270px] justify-between items-center">
+                  <Progress
+                    color="secondary"
+                    aria-label="Progress"
+                    value={((currIndex + 1) * 100) / flashcards.length}
+                    className="flex-grow"
+                  />
+                  <X
+                    className="ml-3 size-6 p-0 m-0 cursor-pointer"
+                    onClick={() => router.push("/flashcards")}
+                  />
+                </div>
                 <div className="relative w-[240px] h-[320px]">
                   <AnimatePresence
                     initial={false}
@@ -139,7 +151,6 @@ export default function Flashcard() {
                     size="lg"
                     color="secondary"
                     aria-label="Previous"
-                    isDisabled={currIndex < 1}
                     onClick={handlePrev}
                   >
                     <ArrowLeft />
