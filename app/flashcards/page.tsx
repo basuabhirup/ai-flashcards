@@ -6,6 +6,7 @@ import { SignedIn, useUser } from "@clerk/nextjs";
 import { Button, Card, CardBody, Link } from "@nextui-org/react";
 import { collection, doc, getDoc, setDoc } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Flashcard() {
   const { isLoaded, isSignedIn, user } = useUser();
@@ -16,15 +17,33 @@ export default function Flashcard() {
     async function getFlashcards() {
       if (!user) return;
       setIsLoading(true);
-      const docRef = doc(collection(db, "users"), user.id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap.exists()) {
-        const collections = docSnap.data().flashcardSets || [];
-        setFlashcardSets(collections);
-      } else {
-        await setDoc(docRef, { flashcardSets: [] });
+      try {
+        const docRef = doc(collection(db, "users"), user.id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const collections = docSnap.data().flashcardSets || [];
+
+          // Sort collections from latest to oldest
+          const sortedCollections = collections.sort((a: any, b: any) => {
+            // Ensure we have timestamps to compare
+            const timestampA = a.timestamp?.toDate?.() || new Date(0);
+            const timestampB = b.timestamp?.toDate?.() || new Date(0);
+            return timestampB - timestampA;
+          });
+
+          setFlashcardSets(sortedCollections);
+        } else {
+          // If the user document doesn't exist, create it with an empty flashcardSets array
+          await setDoc(docRef, { flashcardSets: [] });
+          setFlashcardSets([]);
+        }
+      } catch (error) {
+        console.error("Error fetching flashcards:", error);
+        toast.error("Error fetching flashcards.")
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     }
     if (!!isLoaded) {
       getFlashcards();
