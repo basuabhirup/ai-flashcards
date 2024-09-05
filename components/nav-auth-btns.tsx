@@ -8,7 +8,6 @@ import {
 } from "@clerk/clerk-react";
 import { ClerkLoaded, ClerkLoading } from "@clerk/nextjs";
 import { Button, Link, NavbarItem, Spinner } from "@nextui-org/react";
-import { ThemeSwitcher } from "./theme-switcher";
 
 export const NavAuthButtons = () => {
   return (
@@ -18,9 +17,6 @@ export const NavAuthButtons = () => {
       </ClerkLoading>
       <ClerkLoaded>
         <SignedOut>
-          <NavbarItem className="flex sm:hidden">
-            <ThemeSwitcher />
-          </NavbarItem>
           <NavbarItem>
             <SignInButton mode="modal">
               <Button as={Link} color="secondary" variant="flat">
