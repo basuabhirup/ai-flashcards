@@ -62,8 +62,9 @@ export default function Generate() {
       }
 
       // Check if the user has exceeded the monthly limit
-      const MONTHLY_LIMIT =
-        process.env.NEXT_PUBLIC_MONTHLY_FLASHCARDS_LIMIT || 10;
+      const MONTHLY_LIMIT = process.env.NEXT_PUBLIC_MONTHLY_FLASHCARDS_LIMIT
+        ? parseInt(process.env.NEXT_PUBLIC_MONTHLY_FLASHCARDS_LIMIT)
+        : 10;
       if (monthlyCount >= MONTHLY_LIMIT) {
         toast.error(
           `You have reached your monthly limit (${MONTHLY_LIMIT} cards / month) for flashcard generation.`
