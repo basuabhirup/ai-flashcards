@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { collection, doc, getDoc, writeBatch } from "firebase/firestore";
 import { db } from "@/config/firebase";
 import { useClerk, useUser } from "@clerk/nextjs";
@@ -15,11 +15,16 @@ import {
   ModalBody,
   ModalContent,
   ModalHeader,
+  ModalFooter,
   Textarea,
   useDisclosure,
 } from "@nextui-org/react";
-import { Save, SaveAll, Sparkles } from "lucide-react";
+import { Save, SaveAll, Sparkles, Edit, Trash } from "lucide-react";
 import { toast } from "sonner";
+
+const STORAGE_KEY_PREFIX = "aiFlashGenerated";
+const PROMPT_STORAGE_KEY = `${STORAGE_KEY_PREFIX}Prompt`;
+const FLASHCARDS_STORAGE_KEY = `${STORAGE_KEY_PREFIX}Flashcards`;
 
 export default function Generate() {
   const [text, setText] = useState("");
@@ -30,6 +35,32 @@ export default function Generate() {
   const { user, isSignedIn, isLoaded } = useUser();
   const { openSignIn } = useClerk();
   const router = useRouter();
+
+  const [editingCard, setEditingCard] = useState<IFlashcard | null>(null);
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDiscardModalOpen, setIsDiscardModalOpen] = useState(false);
+
+  useEffect(() => {
+    const storedPrompt = localStorage.getItem(PROMPT_STORAGE_KEY);
+    const storedFlashcards = localStorage.getItem(FLASHCARDS_STORAGE_KEY);
+    if (storedPrompt) {
+      setText(storedPrompt);
+    }
+    if (storedFlashcards) {
+      setFlashcards(JSON.parse(storedFlashcards));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem(PROMPT_STORAGE_KEY, text);
+  }, [text]);
+
+  useEffect(() => {
+    if (flashcards.length > 0) {
+      localStorage.setItem(FLASHCARDS_STORAGE_KEY, JSON.stringify(flashcards));
+    }
+  }, [flashcards]);
 
   const handleSubmit = async () => {
     if (!text.trim()) {
@@ -110,6 +141,7 @@ export default function Generate() {
       await batch.commit();
 
       setFlashcards(data);
+      localStorage.setItem(FLASHCARDS_STORAGE_KEY, JSON.stringify(data));
     } catch (error) {
       console.error("Error generating flashcards:", error);
       toast.error(
@@ -162,6 +194,8 @@ export default function Generate() {
       toast.success("Flashcards saved successfully!");
       onClose();
       setSetName("");
+      localStorage.removeItem(PROMPT_STORAGE_KEY);
+      localStorage.removeItem(FLASHCARDS_STORAGE_KEY);
       router.push("/flashcards");
     } catch (error) {
       console.error("Error saving flashcards:", error);
@@ -171,6 +205,39 @@ export default function Generate() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleEditCard = (card: IFlashcard, index: number) => {
+    setEditingCard(card);
+    setEditingIndex(index);
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editingCard && editingIndex !== null) {
+      const updatedFlashcards = [...flashcards];
+      updatedFlashcards[editingIndex] = editingCard;
+      setFlashcards(updatedFlashcards);
+      localStorage.setItem(
+        FLASHCARDS_STORAGE_KEY,
+        JSON.stringify(updatedFlashcards)
+      );
+    }
+    setIsEditModalOpen(false);
+    setEditingCard(null);
+    setEditingIndex(null);
+  };
+
+  const handleDiscard = () => {
+    setIsDiscardModalOpen(true);
+  };
+
+  const confirmDiscard = () => {
+    setFlashcards([]);
+    setText("");
+    localStorage.removeItem(PROMPT_STORAGE_KEY);
+    localStorage.removeItem(FLASHCARDS_STORAGE_KEY);
+    setIsDiscardModalOpen(false);
   };
 
   return (
@@ -226,20 +293,37 @@ export default function Generate() {
                         <p className="text-sm text-foreground-500">
                           {card.back}
                         </p>
+                        <Button
+                          size="sm"
+                          isIconOnly
+                          startContent={<Edit size={16} />}
+                          className="absolute top-1 right-1 bg-transparent"
+                          onClick={() => handleEditCard(card, index)}
+                        />
                       </CardBody>
                     </Card>
                   ))}
                 </div>
-                <Button
-                  isLoading={isLoading}
-                  size="sm"
-                  color="secondary"
-                  startContent={!isLoading && <SaveAll />}
-                  className="mt-6 px-4 py-6 text-md"
-                  onPress={onOpen}
-                >
-                  {isLoading ? "Saving Flashcards" : "Save Flashcards"}
-                </Button>
+                <div className="flex justify-center gap-4 mt-6">
+                  <Button
+                    size="sm"
+                    color="secondary"
+                    startContent={<SaveAll />}
+                    className="px-4 py-6 text-md"
+                    onPress={onOpen}
+                  >
+                    Save Flashcards
+                  </Button>
+                  <Button
+                    size="sm"
+                    color="danger"
+                    startContent={<Trash />}
+                    className="px-4 py-6 text-md"
+                    onClick={handleDiscard}
+                  >
+                    Discard
+                  </Button>
+                </div>
               </>
             )}
           </div>
@@ -273,6 +357,75 @@ export default function Generate() {
                   {isLoading ? "Saving" : "Save"}
                 </Button>
               </ModalBody>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={isEditModalOpen}
+        onOpenChange={() => setIsEditModalOpen(false)}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Edit Flashcard
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  label="Front"
+                  value={editingCard?.front || ""}
+                  onChange={(e) =>
+                    setEditingCard({ ...editingCard!, front: e.target.value })
+                  }
+                />
+                <Input
+                  label="Back"
+                  value={editingCard?.back || ""}
+                  onChange={(e) =>
+                    setEditingCard({ ...editingCard!, back: e.target.value })
+                  }
+                />
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={handleSaveEdit}>
+                  Save
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+
+      <Modal
+        isOpen={isDiscardModalOpen}
+        onOpenChange={() => setIsDiscardModalOpen(false)}
+      >
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Discard Flashcards
+              </ModalHeader>
+              <ModalBody>
+                <p>
+                  Are you sure you want to discard these flashcards? This action
+                  cannot be undone.
+                </p>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" onClick={confirmDiscard}>
+                  Discard
+                </Button>
+                <Button
+                  // color="secondary"
+                  // variant="flat"
+                  onClick={() => setIsDiscardModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+              </ModalFooter>
             </>
           )}
         </ModalContent>
