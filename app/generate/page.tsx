@@ -153,14 +153,28 @@ export default function Generate() {
   };
 
   const saveFlashcards = async () => {
-    if (!setName.trim()) {
-      alert("Please enter a name for your flashcards set.");
+    const trimmedSetName = setName.trim();
+
+    if (!trimmedSetName) {
+      toast.error("Please enter a name for your flashcards set.");
       return;
     }
+
+    // Regular expression to check for special characters
+    const specialCharsRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+
+    if (specialCharsRegex.test(trimmedSetName)) {
+      toast.error(
+        "Set name contains special characters. Please use only letters, numbers, and spaces."
+      );
+      return;
+    }
+
     if (!isSignedIn) {
       openSignIn();
       return;
     }
+
     setIsLoading(true);
 
     try {
@@ -174,16 +188,21 @@ export default function Generate() {
         const userData = userDocSnap.data();
         const updatedSets = [
           ...(userData.flashcardSets || []),
-          { name: setName, timestamp: currentTimestamp },
+          { name: trimmedSetName, timestamp: currentTimestamp },
         ];
         batch.update(userDocRef, { flashcardSets: updatedSets });
       } else {
         batch.set(userDocRef, {
-          flashcardSets: [{ name: setName, timestamp: currentTimestamp }],
+          flashcardSets: [
+            { name: trimmedSetName, timestamp: currentTimestamp },
+          ],
         });
       }
 
-      const setDocRef = doc(collection(userDocRef, "flashcardSets"), setName);
+      const setDocRef = doc(
+        collection(userDocRef, "flashcardSets"),
+        trimmedSetName
+      );
       batch.set(setDocRef, {
         flashcards,
         createdAt: currentTimestamp,
